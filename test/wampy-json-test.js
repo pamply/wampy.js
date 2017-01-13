@@ -166,7 +166,8 @@ describe('Wampy.js [with JSON encoder]', function () {
                 onError: function () { done('Reached error'); },
                 onReconnect: function () { done('Reached reconnection'); },
                 onReconnectSuccess: function () { done('Reached reconnection success'); },
-                ws: WebSocket
+                ws: WebSocket,
+                strictURIValidation: true
             });
         });
 
@@ -177,14 +178,15 @@ describe('Wampy.js [with JSON encoder]', function () {
                     customFiled3: [1, 2, 3, 4, 5]
                 },
                 options = wampy.options({
-                    autoReconnect     : true,
-                    reconnectInterval : 1000,
-                    maxRetries        : 5,
-                    transportEncoding : 'json',
-                    helloCustomDetails: helloCustomDetails,
-                    onChallenge       : function () {},
-                    authid            : 'userid',
-                    authmethods       : ['wampcra'],
+                    autoReconnect       : true,
+                    reconnectInterval   : 1000,
+                    maxRetries          : 5,
+                    transportEncoding   : 'json',
+                    helloCustomDetails  : helloCustomDetails,
+                    onChallenge         : function () {},
+                    authid              : 'userid',
+                    authmethods         : ['wampcra'],
+                    strictURIValidation : true
                 }).options();
 
             expect(options.autoReconnect).to.be.true;
@@ -201,6 +203,29 @@ describe('Wampy.js [with JSON encoder]', function () {
             expect(options.onError).to.be.a('function');
             expect(options.onReconnect).to.be.a('function');
             expect(options.onReconnectSuccess).to.be.a('function');
+            expect(options.strictURIValidation).to.be.true;
+        });
+
+        it('allows to use Relaxed/Loose', function () {
+
+            var validLooseURI = "com%3A%3A%2Fmyapp%3A%3Atopic";
+            var notValidLooseURI = "com%3A%3A%2Fmyapp%3A%3Atopic#";
+            var validStrictURI = "com.myapp.topic";
+            var notValidStrictURI = "com.my%app.topic";
+
+            wampy.options({strictURIValidation:false});
+
+            expect(wampy._validateURI(validLooseURI)).to.be.true;
+            expect(wampy._validateURI(notValidLooseURI)).to.be.false;
+            expect(wampy._validateURI(validStrictURI)).to.be.true;
+            expect(wampy._validateURI(notValidStrictURI)).to.be.true;
+
+            wampy.options({strictURIValidation:true});
+
+            expect(wampy._validateURI(validLooseURI)).to.be.false;
+            expect(wampy._validateURI(notValidLooseURI)).to.be.false;
+            expect(wampy._validateURI(validStrictURI)).to.be.true;
+            expect(wampy._validateURI(notValidStrictURI)).to.be.false;
         });
 
         it('allows to get current WAMP Session ID', function () {

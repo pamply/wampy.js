@@ -316,6 +316,8 @@ options([opts])
 
 Options attributes description:
 
+* **strictURIValidation**. Default value: true. Allows relaxed/loose when is disable.
+* **debug**. Default value: false. Enable debugging with console log.
 * **autoReconnect**. Default value: true. Enable autoreconnecting. In case of connection failure, Wampy will
 try to reconnect to WAMP server, and if you were subscribed to any topics,
 or had registered some procedures, Wampy will resubscribe to that topics and reregister procedures.

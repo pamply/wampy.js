@@ -339,6 +339,12 @@
              */
             this._options = {
                 /**
+                 * Validation
+                 * @type {boolean}
+                */
+                strictURIValidation: true,
+
+                /**
                  * Logging
                  * @type {boolean}
                  */
@@ -573,7 +579,7 @@
          * @private
          */
         _validateURI (uri) {
-            const re = /^([0-9a-zA-Z_]{2,}\.)*([0-9a-zA-Z_]{2,})$/;
+            const re = this._options.strictURIValidation? /^([0-9a-zA-Z_]{2,}\.)*([0-9a-zA-Z_]{2,})$/ : /^([^\s\.#]+\.)*([^\s\.#]+)$/
             return !(!re.test(uri) || uri.indexOf('wamp') === 0);
         }
 
